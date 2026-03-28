@@ -8,6 +8,7 @@ struct obstacle{
     bool active;
 };
 
+
 /*
     I'm going to initialize a lot o obstacles and if one is active he is going to shown, else he can become an active one.
     So it's just a loop and if one is not active and the condition to be active is true than he will become active.
