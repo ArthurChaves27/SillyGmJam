@@ -1,7 +1,9 @@
 #include <raylib.h>
 #include <deque>
 
-struct obstacle{
+#define MAX_OBS 8
+
+ struct Obstacle{
     Vector2 pos;
     Vector2 size;
     int speed;
@@ -28,27 +30,52 @@ int main(){
     Vector2 floorSpos = {0, 0};
     Vector2 floorEpos = {1280, 0};
 
-    std::deque<obstacle> obstacles = {};
+    Obstacle obstacles[MAX_OBS];
+
+    for(int i = 0; i < MAX_OBS; i++){
+
+        obstacles[i].pos = {1330, 0};
+        obstacles[i].size = {50, 50};
+        obstacles[i].speed = -300;
+        obstacles[i].active = false;
+
+    }
     
+    obstacles[0].pos = {1024, 130};
+    obstacles[0].active = true;
 
     while(!WindowShouldClose()){
 
-        int dt = GetFrameTime();
+        float dt = GetFrameTime();
 
         if((IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) && carPos.y != screenH/4.0f - 80){
                 
             carPos.y -= 180;  
 
-        }else if((IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) && carPos.y != screenH - 80){
+        }else if((IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) && carPos.y != screenH - 80.0f){
                 
             carPos.y += 180;  
 
         }
 
-        for(int i = 0; i < obstacles.size(); i++){
+        for(int i = 0; i < MAX_OBS; i++){
+            
+            if(obstacles[i].active){
+                obstacles[i].pos.x += obstacles[i].speed*dt;
 
+                if(obstacles[i + 1].pos.x - (obstacles[i].pos.x + obstacles[i].size.x) >= 256){
+                    obstacles[i + 1].active = true;
+                }
 
-        }        
+                if(obstacles[i].pos.x <= 0){
+
+                    obstacles[i].pos = {1330, 0};
+                    obstacles[i].active = false;
+
+                }
+            }
+            
+        }
 
         BeginDrawing();
         ClearBackground(WHITE);
@@ -62,9 +89,13 @@ int main(){
 
         }
         
-        //for(int i = 0; i < obstacles.size(); i++) DrawRectangleV(obstacles[i], Vector2{50, 50}, RED);
+        for(int i = 0; i < MAX_OBS; i++){
+            
+            if(obstacles[i].active) 
+                DrawRectangleV(obstacles[i].pos, obstacles[i].size, RED);
 
-              DrawRectangleV(carPos, carSize, BLACK);
+        }
+        DrawRectangleV(carPos, carSize, BLACK);
 
         EndDrawing();
 
